@@ -155,13 +155,15 @@ fn threejs_biquadraticTexture( map : texture_2d<f32>, coord : vec2f, level : i32
 
 class WGSLNodeBuilder extends NodeBuilder {
 
-	constructor( object, renderer ) {
+	constructor( object, renderer, commonUniformBuffer = null ) {
 
 		super( object, renderer, new WGSLNodeParser() );
 
 		this.uniformGroups = {};
 
 		this.builtins = {};
+
+		this.commonUniformBuffer = commonUniformBuffer;
 
 	}
 
@@ -532,7 +534,7 @@ class WGSLNodeBuilder extends NodeBuilder {
 
 				if ( uniformsGroup === undefined ) {
 
-					uniformsGroup = new NodeUniformsGroup( groupName, group );
+					uniformsGroup = new NodeUniformsGroup( groupName, group, this.commonUniformBuffer );
 					uniformsGroup.setVisibility( gpuShaderStageLib[ shaderStage ] );
 
 					uniformsStage[ groupName ] = uniformsGroup;
