@@ -605,6 +605,20 @@ ${ flowData.code }
 
 	}
 
+	getClipDistances() {
+
+		const extensions = this.renderer.backend.extensions;
+
+		if ( extensions.has( 'WEBGL_clip_cull_distance' ) ) {
+
+			return 'gl_ClipDistance';
+
+		}
+
+		return null;
+
+	}
+
 	getDrawIndex() {
 
 		const extensions = this.renderer.backend.extensions;
