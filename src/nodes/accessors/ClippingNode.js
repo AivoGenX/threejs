@@ -74,6 +74,8 @@ class HardwareClipDistancesNode extends Node {
 
 }
 
+export const clipDistances = () => nodeObject( new HardwareClipDistancesNode() );
+
 class ClippingNode extends Node {
 
 	constructor( scope = ClippingNode.DEFAULT ) {
@@ -81,23 +83,6 @@ class ClippingNode extends Node {
 		super();
 
 		this.scope = scope;
-
-	}
-
-	generate( builder ) {
-
-		if ( this.scope === ClippingNode.HARDWARE ) {
-
-			const clippingContext = builder.clippingContext;
-			const { localClippingCount, globalClippingCount } = clippingContext;
-
-			const numClippingPlanes = globalClippingCount + localClippingCount;
-
-			builder.getClipDistances( numClippingPlanes );
-
-		}
-
-		super.generate( builder );
 
 	}
 
