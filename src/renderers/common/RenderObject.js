@@ -64,7 +64,7 @@ export default class RenderObject {
 		this.clippingContext = clippingContext;
 		this.clippingContextVersion = clippingContext !== null ? clippingContext.version : 0;
 
-		this.initialNodesCacheKey = this.getNodesCacheKey();
+		this.initialNodesCacheKey = this.getDynamicCacheKey();
 		this.initialCacheKey = this.getCacheKey();
 
 		this._nodeBuilderState = null;
@@ -178,10 +178,15 @@ export default class RenderObject {
 
 			if ( value !== null ) {
 
+				// some material values require a formatting
+
 				const type = typeof value;
-				if ( type === 'number' ) valueKey = value !== 0 ? '1' : '0'; // Convert to on/off, important for clearcoat, transmission, etc
-				else if ( type === 'boolean' ) valueKey = String( value );
-				else if ( type === 'object' ) {
+
+				if ( type === 'number' ) {
+
+					valueKey = value !== 0 ? '1' : '0'; // Convert to on/off, important for clearcoat, transmission, etc
+
+				} else if ( type === 'object' ) {
 
 					valueKey = '{';
 
@@ -192,6 +197,10 @@ export default class RenderObject {
 					}
 
 					valueKey += '}';
+
+				} else {
+
+					valueKey = String( value );
 
 				}
 
@@ -243,21 +252,21 @@ export default class RenderObject {
 
 	get needsUpdate() {
 
-		return this.initialNodesCacheKey !== this.getNodesCacheKey() || this.clippingNeedsUpdate;
+		return this.initialNodesCacheKey !== this.getDynamicCacheKey() || this.clippingNeedsUpdate;
 
 	}
 
-	getNodesCacheKey() {
+	getDynamicCacheKey() {
 
 		// Environment Nodes Cache Key
 
-		return this._nodes.getCacheKey( this.scene, this.lightsNode );
+		return this.object.receiveShadow + ',' + this._nodes.getCacheKey( this.scene, this.lightsNode );
 
 	}
 
 	getCacheKey() {
 
-		return this.getMaterialCacheKey() + ',' + this.getNodesCacheKey();
+		return this.getMaterialCacheKey() + ',' + this.getDynamicCacheKey();
 
 	}
 
