@@ -1,6 +1,6 @@
 
 import Node from '../core/Node.js';
-import { nodeObject } from '../shadernode/ShaderNode.js';
+import { addNodeElement, nodeObject, nodeProxy } from '../shadernode/ShaderNode.js';
 import { positionView } from './PositionNode.js';
 import { diffuseColor, property } from '../core/PropertyNode.js';
 import { tslFn } from '../shadernode/ShaderNode.js';
@@ -60,7 +60,7 @@ class HardwareClipDistancesNode extends Node {
 
 		const numClippingPlanes = globalClippingCount + localClippingCount;
 
-		const propertyName = builder.getClipDistances( numClippingPlanes );
+		const propertyName = builder.getClipDistances( numClippingPlanes || 1 );
 
 		return propertyName;
 
@@ -75,6 +75,8 @@ class HardwareClipDistancesNode extends Node {
 }
 
 export const clipDistances = () => nodeObject( new HardwareClipDistancesNode() );
+
+addNodeElement( 'clipDistances', clipDistances );
 
 class ClippingNode extends Node {
 

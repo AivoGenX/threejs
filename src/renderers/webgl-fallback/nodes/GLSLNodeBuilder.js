@@ -57,6 +57,7 @@ class GLSLNodeBuilder extends NodeBuilder {
 		this.extensions = {};
 
 		this.instanceBindGroups = false;
+		this.extensions = {};
 
 	}
 
@@ -605,11 +606,30 @@ ${ flowData.code }
 
 	}
 
+	enableClipDistances() {
+
+		const extensions = this.renderer.backend.extensions;
+
+		if ( extensions.has( 'WEBGL_clip_cull_distance' ) ) {
+
+			console.log( 'Has extension clip_distances' );
+
+			extensions.get( 'WEBGL_clip_cull_distance' );
+
+			this.getExtension( 'GL_ANGLE_clip_cull_distance', 'enable' );
+
+		}
+
+
+	}
+
 	getClipDistances() {
 
 		const extensions = this.renderer.backend.extensions;
 
 		if ( extensions.has( 'WEBGL_clip_cull_distance' ) ) {
+
+			this.enableClipDistances();
 
 			return 'gl_ClipDistance';
 
@@ -912,6 +932,7 @@ void main() {
 		if ( this.material !== null ) {
 
 			this.vertexShader = this._getGLSLVertexCode( shadersData.vertex );
+			console.log( this.vertexShader );
 			this.fragmentShader = this._getGLSLFragmentCode( shadersData.fragment );
 
 		} else {

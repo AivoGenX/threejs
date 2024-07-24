@@ -647,7 +647,7 @@ ${ flowData.code }
 
 	getClipDistances( numPlanes ) {
 
-		this.enableClipDistances();
+		//this.enableClipDistances();
 
 		return 'varyings.' + this.getBuiltin( 'clip_distances', 'clipDistances', `array<f32, ${numPlanes}>`, 'vertex' );
 
@@ -1116,6 +1116,7 @@ ${ flowData.code }
 		if ( this.material !== null ) {
 
 			this.vertexShader = this._getWGSLVertexCode( shadersData.vertex );
+			console.log( this.vertexShader );
 			this.fragmentShader = this._getWGSLFragmentCode( shadersData.fragment );
 
 		} else {
