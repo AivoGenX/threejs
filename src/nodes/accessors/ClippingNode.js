@@ -1,6 +1,6 @@
 
 import Node from '../core/Node.js';
-import { addNodeElement, nodeObject, nodeProxy } from '../shadernode/ShaderNode.js';
+import { addNodeElement, nodeObject } from '../shadernode/ShaderNode.js';
 import { positionView } from './PositionNode.js';
 import { diffuseColor, property } from '../core/PropertyNode.js';
 import { tslFn } from '../shadernode/ShaderNode.js';
@@ -36,6 +36,9 @@ class HardwareClipDistancesElementNode extends ArrayElementNode {
 			snippet = builder.format( snippet, type, output );
 
 		}
+
+		// TODO: Potentially activate gl clip_distance index when element is accessed rather
+		// than globally based on clipping context.
 
 		return snippet;
 
