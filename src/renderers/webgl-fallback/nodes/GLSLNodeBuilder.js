@@ -57,6 +57,7 @@ class GLSLNodeBuilder extends NodeBuilder {
 		this.extensions = {};
 
 		this.instanceBindGroups = false;
+		this.extensions = {};
 
 		this.useComparisonMethod = true;
 
@@ -607,6 +608,51 @@ ${ flowData.code }
 
 	}
 
+	enableClipDistanceIndex( index ) {
+
+		const extensions = this.renderer.backend.extensions;
+
+	}
+
+	enableClipDistances( numClippingPlanes ) {
+
+		const extensions = this.renderer.backend.extensions;
+
+		if ( extensions.has( 'WEBGL_clip_cull_distance' ) ) {
+
+			const ext = extensions.get( 'WEBGL_clip_cull_distance' );
+
+			this.enableExtension( 'GL_ANGLE_clip_cull_distance', 'enable' );
+
+			const gl = this.renderer.backend.getContext();
+
+			// Discretely enable each of a maximum of eight clipping planes
+			for ( let i = 0; i < numClippingPlanes; i ++ ) {
+
+				gl.enable( ext[ `CLIP_DISTANCE${i}_WEBGL` ] );
+
+			}
+
+		}
+
+	}
+
+	getClipDistances( numClippingPlanes ) {
+
+		const extensions = this.renderer.backend.extensions;
+
+		if ( extensions.has( 'WEBGL_clip_cull_distance' ) ) {
+
+			this.enableClipDistances( numClippingPlanes );
+
+			return 'gl_ClipDistance';
+
+		}
+
+		return null;
+
+	}
+
 	getDrawIndex() {
 
 		const extensions = this.renderer.backend.extensions;
@@ -900,6 +946,7 @@ void main() {
 		if ( this.material !== null ) {
 
 			this.vertexShader = this._getGLSLVertexCode( shadersData.vertex );
+			console.log( this.vertexShader );
 			this.fragmentShader = this._getGLSLFragmentCode( shadersData.fragment );
 
 		} else {
