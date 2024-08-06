@@ -37,7 +37,7 @@ class DragControls extends EventDispatcher {
 
 		this.rotateSpeed = 1;
 
-		//
+		this.mouseButtons = { LEFT: true, MIDDLE: true, RIGHT: true };
 
 		const scope = this;
 
@@ -88,6 +88,45 @@ class DragControls extends EventDispatcher {
 		function onPointerMove( event ) {
 
 			if ( scope.enabled === false ) return;
+
+			if ( event.pointerType === 'mouse' ) {
+
+				switch ( event.buttons ) {
+
+					case 1:
+
+						if ( scope.mouseButtons.LEFT !== true ) {
+
+							return;
+
+						}
+
+						break;
+					case 2:
+
+						if ( scope.mouseButtons.RIGHT !== true ) {
+
+							return;
+
+						}
+
+						break;
+					case 4:
+
+						if ( scope.mouseButtons.MIDDLE !== true ) {
+
+							return;
+
+						}
+
+						break;
+					default:
+
+						break;
+
+				}
+
+			}
 
 			updatePointer( event );
 
@@ -174,6 +213,45 @@ class DragControls extends EventDispatcher {
 		function onPointerDown( event ) {
 
 			if ( scope.enabled === false ) return;
+
+			if ( event.pointerType === 'mouse' ) {
+
+				switch ( event.button ) {
+
+					case 0:
+
+						if ( scope.mouseButtons.LEFT !== true ) {
+
+							return;
+
+						}
+
+						break;
+					case 1:
+
+						if ( scope.mouseButtons.MIDDLE !== true ) {
+
+							return;
+
+						}
+
+						break;
+					case 2:
+
+						if ( scope.mouseButtons.RIGHT !== true ) {
+
+							return;
+
+						}
+
+						break;
+					default:
+
+						break;
+
+				}
+
+			}
 
 			updatePointer( event );
 

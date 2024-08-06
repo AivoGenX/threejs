@@ -102,6 +102,23 @@
 			是否启用控制器。
 		</p>
 
+		<h3>[property:Object mouseButtons]</h3>
+		<p>
+			鼠标事件中允许响应的按键。 
+			<code>
+				controls.mouseButtons = {
+					LEFT: true,
+					MIDDLE: true,
+					RIGHT: true
+				}
+			</code>
+		</p>
+
+		<h3>[property:Boolean recursive]</h3>
+		<p>
+			可拖动对象的子对象是否可以独立于其父对象进行拖动。默认值为 `true`。
+		</p>
+
 		<h3>[property:Boolean transformGroup]</h3>
 		<p>
 			当[page:DragControls.objects]数组包含一个单个可拖拽的组对象时该选项生效。如果设置为`true`，[name]会转换整个组对象，而不对单个对象做转换。默认值为`false`。
@@ -109,7 +126,7 @@
 
 		<h3>[property:String mode]</h3>
 		<p>
-			The current transformation mode. Possible values are `translate`, and `rotate`. Default is `translate`.
+			当前的变换模式，该值可以是 `translate` 或 `rotate`。 默认值为 `translate`。
 		</p>
 
 		<h2>方法</h2>
@@ -143,7 +160,7 @@
 
 		<h3>[method:undefined setObjects] ( [param:Array objects] )</h3>
 		<p>
-			Sets an array of draggable objects by overwriting the existing one.
+			通过覆盖现有数组来设置可拖动对象数组。
 		</p>
 
 		<h2>源代码</h2>
