@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgpu - postprocessing - per-object motion blur</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+	</head>
+	<body>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.webgpu.js",
+					"three/tsl": "../build/three.webgpu.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+			import { color, pass, normalWorld, output, ndcPosition, motionBlur, mrt, uniform } from 'three/tsl';
+
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { Timer } from 'three/addons/misc/Timer.js';
+
+			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+			let camera, renderer, postProcessing;
+			let scenePassColor;
+			let timer, mesh;
+
+			init();
+
+			function init() {
+
+				renderer = new THREE.WebGPURenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setAnimationLoop( animate );
+				document.body.appendChild( renderer.domElement );
+
+				//
+
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 100 );
+				camera.position.set( 1, 2, 3 );
+
+				const scene = new THREE.Scene();
+				scene.fog = new THREE.Fog( 0x0487e2, 7, 25 );
+				scene.backgroundNode = normalWorld.y.mix( color( 0x0487e2 ), color( 0x0066ff ) );
+
+				timer = new Timer();
+
+				const texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
+				texture.colorSpace = THREE.SRGBColorSpace;
+
+				const geometry = new THREE.BoxGeometry();
+				const material = new THREE.MeshBasicMaterial( { map: texture } );
+
+				const intensityNode = uniform( 1 );
+
+				mesh = new THREE.Mesh( geometry, material );
+				scene.add( mesh );
+
+				scene.add( new THREE.AmbientLight( 0xcccccc ) );
+
+				const light = new THREE.DirectionalLight( 0xffffff, 3 );
+				light.position.set( 1, 1, 1 );
+				scene.add( light );
+
+				// post processing
+
+				postProcessing = new THREE.PostProcessing( renderer );
+
+				const scenePass = pass( scene, camera );
+				scenePass.setMRT( mrt( {
+					output,
+					ndcPosition
+				} ) );
+
+				scenePassColor = scenePass.getTextureNode();
+
+				const ndcPositionCurrent = scenePass.getTextureNode( 'ndcPosition' );
+				const ndcPositionPrevious = scenePass.getPreviousTextureNode( 'ndcPosition' );
+
+				postProcessing.outputNode = motionBlur( scenePassColor, ndcPositionCurrent, ndcPositionPrevious, intensityNode );
+
+				//
+
+				const controls = new OrbitControls( camera, renderer.domElement );
+				controls.minDistance = 1;
+				controls.maxDistance = 10;
+
+				window.addEventListener( 'resize', onWindowResize );
+
+				//
+
+				const gui = new GUI();
+				gui.title( 'Motion Blur Settings' );
+				gui.add( intensityNode, 'value', 0, 3 ).name( 'intensity' );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+
+				timer.update();
+
+				mesh.rotation.y = timer.getElapsed() * 2;
+
+				//if ( mixer ) mixer.update( timer.getDelta() );
+
+				postProcessing.render();
+
+			}
+
+		</script>
+
+	</body>
+</html>
