@@ -1,6 +1,6 @@
 import TempNode from '../core/TempNode.js';
 import { addNodeClass } from '../core/Node.js';
-import { addNodeElement, Fn, nodeObject, float, mat3, vec3, If } from '../shadernode/ShaderNode.js';
+import { addNodeElement, Fn, nodeObject, float, mat3, vec3, vec4, If } from '../shadernode/ShaderNode.js';
 import { rendererReference } from '../accessors/RendererReferenceNode.js';
 import { select } from '../math/CondNode.js';
 import { clamp, log2, max, min, pow, mix } from '../math/MathNode.js';
@@ -11,16 +11,22 @@ import { NoToneMapping, LinearToneMapping, ReinhardToneMapping, CineonToneMappin
 // exposure only
 const LinearToneMappingNode = Fn( ( { color, exposure } ) => {
 
-	return color.mul( exposure ).clamp();
+	const colortone = vec3( color ).mul( exposure );
+
+	colortone.assign( clamp( colortone, 0.0, 1.0 ) );
+
+	return vec4( colortone, color.a );
 
 } );
 
 // source: https://www.cs.utah.edu/docs/techreports/2002/pdf/UUCS-02-001.pdf
 const ReinhardToneMappingNode = Fn( ( { color, exposure } ) => {
 
-	color = color.mul( exposure );
+	const colortone = vec3( color ).mul( exposure );
 
-	return color.div( color.add( 1.0 ) ).clamp();
+	colortone.assign( colortone.div( colortone.add( 1.0 ) ) );
+
+	return vec4( colortone, color.a );
 
 } );
 
@@ -28,13 +34,16 @@ const ReinhardToneMappingNode = Fn( ( { color, exposure } ) => {
 const OptimizedCineonToneMappingNode = Fn( ( { color, exposure } ) => {
 
 	// optimized filmic operator by Jim Hejl and Richard Burgess-Dawson
-	color = color.mul( exposure );
-	color = color.sub( 0.004 ).max( 0.0 );
+	const colortone = vec3( color ).mul( exposure );
 
-	const a = color.mul( color.mul( 6.2 ).add( 0.5 ) );
-	const b = color.mul( color.mul( 6.2 ).add( 1.7 ) ).add( 0.06 );
+	colortone.assign( colortone.sub( 0.004 ).max( 0.0 ) );
 
-	return a.div( b ).pow( 2.2 );
+	const a = colortone.mul( colortone.mul( 6.2 ).add( 0.5 ) );
+	const b = colortone.mul( colortone.mul( 6.2 ).add( 1.7 ) ).add( 0.06 );
+
+	colortone.assign( a.div( b ).pow( 2.2 ) );
+
+	return vec4( colortone, color.a );
 
 } );
 
@@ -114,7 +123,7 @@ const AGXToneMappingNode = Fn( ( { color, exposure } ) => {
 	colortone.assign( LINEAR_REC2020_TO_LINEAR_SRGB.mul( colortone ) );
 	colortone.assign( clamp( colortone, 0.0, 1.0 ) );
 
-	return colortone;
+	return vec4( colortone, color.a );
 
 } );
 
