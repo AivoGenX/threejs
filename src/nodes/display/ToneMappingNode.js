@@ -41,6 +41,8 @@ const OptimizedCineonToneMappingNode = Fn( ( { color, exposure } ) => { // not r
 	const a = colortone.mul( colortone.mul( 6.2 ).add( 0.5 ) );
 	const b = colortone.mul( colortone.mul( 6.2 ).add( 1.7 ) ).add( 0.06 );
 
+	colortone.assign( a.div( b ).pow( 2.2 ) );
+
 	return vec4( colortone, color.a );
 
 } );
