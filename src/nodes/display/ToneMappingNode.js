@@ -31,7 +31,7 @@ const ReinhardToneMappingNode = Fn( ( { color, exposure } ) => {
 } );
 
 // source: http://filmicworlds.com/blog/filmic-tonemapping-operators/
-const OptimizedCineonToneMappingNode = Fn( ( { color, exposure } ) => { // not responding to exposure for some reason...
+const OptimizedCineonToneMappingNode = Fn( ( { color, exposure } ) => {
 
 	// optimized filmic operator by Jim Hejl and Richard Burgess-Dawson
 	const colortone = vec3( color ).mul( exposure );
